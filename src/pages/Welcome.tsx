@@ -78,7 +78,7 @@ export default function Welcome() {
             </div>
           </div>
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-3 animate-fade-in">
-            Welcome to CourseHub
+            Welcome to NotesHub
           </h1>
           <p className="text-gray-600 text-lg animate-fade-in animation-delay-300">
             Your gateway to knowledge and skills
@@ -97,7 +97,7 @@ export default function Welcome() {
             <Heart className="absolute bottom-0 right-0 w-4 h-4 text-pink-400 animate-pulse animation-delay-500" />
           </div>
           <p className="text-gray-700 text-base mb-6 animate-fade-in animation-delay-600">
-            Discover amazing courses on various topics and enhance your skills today!
+            Discover notes on various topics and enhance your skills today!
           </p>
         </div>
         
@@ -106,7 +106,7 @@ export default function Welcome() {
           onClick={handleManualRedirect}
           className="w-full h-14 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl active:scale-95 flex items-center justify-center space-x-3 group relative overflow-hidden"
         >
-          <span className="relative z-10">Explore Courses</span>
+          <span className="relative z-10">Explore Notes</span>
           <ArrowRight className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1 relative z-10" />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
         </Button>

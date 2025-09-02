@@ -460,7 +460,7 @@ export default function Courses() {
               <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
                 <Search className="w-12 h-12 text-gray-400" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">No courses found</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">No notes found</h3>
               <p className="text-gray-600 mb-8">Try adjusting your search or filter criteria</p>
               <button
                 onClick={clearFilters}
