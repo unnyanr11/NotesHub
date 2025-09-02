@@ -201,7 +201,7 @@ export default function About() {
               Back
             </Button>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              About CourseHub
+              About NotesHub
             </h1>
           </div>
         </div>
@@ -225,7 +225,7 @@ export default function About() {
               Empowering Learners Worldwide
             </h2>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto">
-              CourseHub is a leading online learning platform dedicated to providing high-quality education that transforms lives and careers.
+              NotesHub is a leading online learning platform dedicated to providing high-quality education that transforms lives and careers.
             </p>
           </div>
         </div>
@@ -425,7 +425,7 @@ export default function About() {
                       onClick={() => window.location.href = '/courses'}
                       className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105"
                     >
-                      Explore Courses
+                      Explore Notes
                     </Button>
                     <Button 
                       variant="outline"

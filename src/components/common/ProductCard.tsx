@@ -138,7 +138,7 @@ export default function ProductCard({
                 ? 'bg-blue-500/90 text-white hover:bg-blue-600' 
                 : 'bg-purple-500/90 text-white hover:bg-purple-600'
             } transition-all duration-300 transform hover:scale-105 shadow-lg`}>
-              {type === 'course' ? 'Course' : product.format || 'Note'}
+              {type === 'course' ? 'Notes' : product.format || 'Note'}
             </Badge>
           </div>
           
@@ -214,7 +214,7 @@ export default function ProductCard({
             )}
 
             {/* Notes-specific details */}
-            {type === 'note' && product.pages && (
+            {type === 'course' && product.pages && (
               <div className="flex items-center text-sm text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
                 <FileText className="w-4 h-4 mr-2 text-purple-500 animate-pulse" />
                 <span className="font-medium">Pages:</span>
@@ -222,7 +222,7 @@ export default function ProductCard({
               </div>
             )}
 
-            {type === 'note' && product.downloadCount && (
+            {type === 'course' && product.downloadCount && (
               <div className="flex items-center text-sm text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
                 <Download className="w-4 h-4 mr-2 text-green-500 animate-pulse animation-delay-500" />
                 <span className="font-medium">Downloads:</span>
@@ -230,7 +230,7 @@ export default function ProductCard({
               </div>
             )}
 
-            {type === 'note' && product.lastUpdated && (
+            {type === 'course' && product.lastUpdated && (
               <div className="flex items-center text-sm text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
                 <Calendar className="w-4 h-4 mr-2 text-blue-500" />
                 <span className="font-medium">Updated:</span>

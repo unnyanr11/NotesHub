@@ -27,7 +27,7 @@ export default function Welcome() {
 
     // Auto-redirect after 3 seconds
     const timer = setTimeout(() => {
-      navigate('/notes')
+      navigate('/courses')
     }, 3000)
     
     return () => {

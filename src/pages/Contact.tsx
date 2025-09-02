@@ -142,12 +142,12 @@ export default function Contact() {
 
   const faqs = [
     {
-      question: 'How do I access my purchased courses?',
-      answer: 'After your payment is verified, you will receive an email with course access details.'
+      question: 'How do I access my purchased notes?',
+      answer: 'After your payment is verified, you will receive an email with notes access details.'
     },
     {
       question: 'What payment methods do you accept?',
-      answer: 'We currently accept UPI payments through QR code scanning. We are working on adding more payment options soon.'
+      answer: 'We currently accept UPI payments through QR code scanning.'
     },
     {
       question: 'How long does payment verification take?',
@@ -157,16 +157,12 @@ export default function Contact() {
       question: 'Can I get a refund?',
       answer: 'Refunds are not available.'
     },
-    {
-      question: 'Do you offer certificates?',
-      answer: 'No, these courses are provided to you on the subsidised rates (nearly 10% of the original price of original certification) for upskilling purpose only.'
-    }
   ]
 
   const supportCategories = [
     { value: 'technical', label: 'Technical Support', icon: '🔧' },
     { value: 'billing', label: 'Billing & Payments', icon: '💳' },
-    { value: 'course', label: 'Course Content', icon: '📚' },
+    { value: 'course', label: 'Notes Content', icon: '📚' },
     { value: 'account', label: 'Account Issues', icon: '👤' },
     { value: 'general', label: 'General Inquiry', icon: '❓' }
   ]
@@ -449,19 +445,10 @@ export default function Contact() {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-800">Email</p>
-                      <p className="text-blue-600">support@coursehub.com</p>
+                      <p className="text-blue-600">unnyanr11@gmail.com</p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center space-x-4 p-3 bg-green-50 rounded-lg transform transition-all duration-300 hover:scale-105">
-                    <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                      <Phone className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-800">Phone</p>
-                      <p className="text-green-600">+91 98765 43210</p>
-                    </div>
-                  </div>
+                
                   
                   <div className="flex items-center space-x-4 p-3 bg-purple-50 rounded-lg transform transition-all duration-300 hover:scale-105">
                     <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">

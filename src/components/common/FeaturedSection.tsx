@@ -9,7 +9,7 @@ import { Product } from './ProductCard'
 
 interface FeaturedSectionProps {
   products: Product[]
-  type: 'course' | 'note'
+  type: 'course' | 'course'
   onBuyNow: (productId: string) => void
   title?: string
 }
@@ -47,7 +47,7 @@ export default function FeaturedSection({
         <div className="text-center mb-8">
           <h3 className={`text-3xl font-bold mb-4 bg-gradient-to-r ${themeColors.title} bg-clip-text text-transparent flex items-center justify-center`}>
             <Zap className="w-8 h-8 mr-2 text-yellow-500" />
-            {title || (type === 'course' ? 'Featured Courses' : 'Featured Notes')}
+            {title || (type === 'course' ? 'Featured Notes' : 'Featured Notes')}
           </h3>
         </div>
         
