@@ -169,7 +169,7 @@ export default function CheckoutPage() {
   }
 
   const handleBackToNotes = () => {
-    navigate('/notes')
+    navigate('/courses')
   }
 
   return (
