@@ -4,7 +4,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/hooks/useAuth'
 import { BookOpen, FileText, User, LogOut } from 'lucide-react'
 
 interface HeaderProps {
@@ -15,7 +14,6 @@ interface HeaderProps {
 
 export default function Header({ title, showBackButton = false, onBackClick }: HeaderProps) {
   const navigate = useNavigate()
-  const { user, loading, signOut } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -26,13 +24,7 @@ export default function Header({ title, showBackButton = false, onBackClick }: H
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const handleLogout = async () => {
-    try {
-      await signOut()
-    } catch (err) {
-      console.error('Logout failed:', err)
-    }
-  }
+
 
   const handleAuth = () => {
     // This will be handled by the AuthModal in individual pages
@@ -111,34 +103,8 @@ export default function Header({ title, showBackButton = false, onBackClick }: H
             </Link>
 
             {/* Authentication */}
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="text-gray-700 font-medium text-sm hidden lg:block">
-                    {user.email}
-                  </span>
-                </div>
-                <Button 
-                  variant="outline" 
-                  onClick={handleLogout}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                  disabled={loading}
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>{loading ? 'Logging out...' : 'Logout'}</span>
-                </Button>
-              </div>
-            ) : (
-              <Button 
-                onClick={handleAuth}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium"
-              >
-                Sign In
-              </Button>
-            )}
+            
+            
           </nav>
 
           {/* Mobile Menu Button */}
