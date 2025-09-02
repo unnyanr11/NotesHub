@@ -1,8 +1,11 @@
 /**
- * Main courses page where users can browse and purchase courses
+ * Courses.tsx
+ * - Purpose: List and filter notes for purchase.
+ * - Adds a mobile hamburger menu for the header on small screens.
  */
+
 import { Link } from 'react-router';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -33,7 +36,8 @@ interface Course {
 
 /**
  * Courses grid with search and filters.
- * Clicking Buy Now will persist the selected product in localStorage and navigate to checkout.
+ * Clicking Buy Now persists the selected product in localStorage and navigates to checkout.
+ * Mobile: header navigation collapses into a hamburger menu.
  */
 export default function Courses() {
   const navigate = useNavigate()
@@ -44,9 +48,22 @@ export default function Courses() {
   const [hoveredCourse, setHoveredCourse] = useState<string | null>(null)
   const [wishlist, setWishlist] = useState<string[]>([])
 
+  // Mobile menu state for this page's header
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const closeMobile = useCallback(() => setMobileOpen(false), [])
+
   useEffect(() => {
     setIsVisible(true)
   }, [])
+
+  // Close menu on Escape
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMobile()
+    }
+    if (mobileOpen) window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mobileOpen, closeMobile])
 
   // Enhanced course data with more variety
   const courses: Course[] = [
@@ -207,13 +224,13 @@ export default function Courses() {
 
   // Filter courses based on search and category
   const filteredCourses = displayCourses.filter(course => {
-    const matchesSearch = searchTerm === '' || 
+    const matchesSearch = searchTerm === '' ||
       course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    
+
     const matchesCategory = selectedCategory === 'All' || course.category === selectedCategory
-    
+
     return matchesSearch && matchesCategory
   })
 
@@ -234,8 +251,8 @@ export default function Courses() {
   }
 
   const toggleWishlist = (courseId: string) => {
-    setWishlist(prev => 
-      prev.includes(courseId) 
+    setWishlist(prev =>
+      prev.includes(courseId)
         ? prev.filter(id => id !== courseId)
         : [...prev, courseId]
     )
@@ -264,23 +281,81 @@ export default function Courses() {
                 NotesHub
               </h1>
             </div>
-            <nav className="flex items-center space-x-8">
+
+            {/* Desktop nav */}
+            <nav className="hidden md:flex items-center space-x-8">
               <Link to="/courses" className="text-blue-600 font-medium border-b-2 border-blue-600 pb-1 transition-colors duration-300">Notes</Link>
               <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors duration-300 font-medium">About</Link>
               <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors duration-300 font-medium">Contact</Link>
             </nav>
+
+            {/* Mobile hamburger */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label="Toggle menu"
+                aria-expanded={mobileOpen}
+                onClick={() => setMobileOpen(v => !v)}
+              >
+                {mobileOpen ? (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Backdrop */}
+        {mobileOpen && (
+          <div className="md:hidden fixed inset-0 bg-black/30 z-40" onClick={closeMobile} aria-hidden="true" />
+        )}
+
+        {/* Mobile slide-down menu */}
+        <div
+          className={`md:hidden fixed top-[72px] inset-x-0 z-50 transition-all duration-200 ${
+            mobileOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+          }`}
+        >
+          <div className="mx-4 rounded-2xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-200 p-4 space-y-2">
+            <Link
+              to="/courses"
+              onClick={closeMobile}
+              className="block w-full px-4 py-3 rounded-lg text-gray-800 hover:bg-gray-100 font-medium"
+            >
+              Notes
+            </Link>
+            <Link
+              to="/about"
+              onClick={closeMobile}
+              className="block w-full px-4 py-3 rounded-lg text-gray-800 hover:bg-gray-100 font-medium"
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              onClick={closeMobile}
+              className="block w-full px-4 py-3 rounded-lg text-gray-800 hover:bg-gray-100 font-medium"
+            >
+              Contact
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Animated Hero Section */}
-<section className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white py-20 overflow-hidden">        
-  {/* Animated background elements */}
+      <section className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 text-white py-20 overflow-hidden">
+        {/* Animated background elements */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
           <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full mix-blend-soft-light filter blur-3xl opacity-20 animate-pulse"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-soft-light filter blur-3xl opacity-20 animate-pulse animation-delay-2000"></div>
-          
           {/* Floating particles */}
           {[...Array(15)].map((_, i) => (
             <div
@@ -295,7 +370,7 @@ export default function Courses() {
             ></div>
           ))}
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className={`transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             <div className="flex justify-center mb-6">
@@ -310,9 +385,7 @@ export default function Courses() {
             <p className="text-xl md:text-2xl mb-8 text-purple-100 max-w-3xl mx-auto animate-fade-in-up">
               Access expertly crafted study materials and notes to excel in your academics
             </p>
-            <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-300">
-              
-            </div>
+            <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up animation-delay-300"></div>
           </div>
         </div>
       </section>
@@ -334,8 +407,8 @@ export default function Courses() {
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
                 className={`pl-12 pr-12 py-4 text-lg border-2 rounded-xl transition-all duration-300 ${
-                  isSearchFocused 
-                    ? 'border-blue-500 shadow-lg shadow-blue-200' 
+                  isSearchFocused
+                    ? 'border-blue-500 shadow-lg shadow-blue-200'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               />
@@ -414,8 +487,8 @@ export default function Courses() {
                 <div key={course.id} className="transform hover:scale-105 transition-all duration-300">
                   <Card className="overflow-hidden h-full bg-white/90 backdrop-blur-sm border-2 border-yellow-200 shadow-xl hover:shadow-2xl">
                     <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={course.image} 
+                      <img
+                        src={course.image}
                         alt={course.title}
                         className="w-full h-full object-cover"
                       />
@@ -441,7 +514,7 @@ export default function Courses() {
                             </span>
                           )}
                         </div>
-                        <Button 
+                        <Button
                           onClick={() => handleBuyNow(course.id)}
                           size="sm"
                           className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
@@ -469,7 +542,7 @@ export default function Courses() {
               Discover our most sought-after courses designed by industry experts
             </p>
           </div>
-          
+
           {filteredCourses.length === 0 ? (
             <div className="text-center py-20">
               <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
@@ -487,7 +560,7 @@ export default function Courses() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredCourses.map((course, index) => (
-                <div 
+                <div
                   key={course.id}
                   className={`transform transition-all duration-700 hover:scale-105 hover:z-10 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}
                   style={{ transitionDelay: `${index * 100}ms` }}
@@ -497,16 +570,16 @@ export default function Courses() {
                   <Card className="overflow-hidden group h-full bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:shadow-2xl transition-all duration-500 relative">
                     {/* Animated border effect */}
                     <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 transition-opacity duration-300 ${hoveredCourse === course.id ? 'opacity-20' : ''}`}></div>
-                    
+
                     {/* Course Image with overlay */}
                     <div className="relative h-48 overflow-hidden">
-                      <img 
-                        src={course.image} 
+                      <img
+                        src={course.image}
                         alt={course.title}
                         className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                      
+
                       {/* Floating badges */}
                       <div className="absolute top-4 left-4 space-y-2">
                         <Badge className="bg-white/90 text-gray-800 hover:bg-white transition-all duration-300 transform hover:scale-105 shadow-lg">
@@ -521,28 +594,27 @@ export default function Courses() {
                             {course.level}
                           </Badge>
                         )}
-
                       </div>
-                      
+
                       {/* Wishlist button */}
                       <button
                         onClick={() => toggleWishlist(course.id)}
                         className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg"
                       >
-                        <Heart 
+                        <Heart
                           className={`w-5 h-5 transition-colors duration-300 ${
                             wishlist.includes(course.id) ? 'text-red-500 fill-current' : 'text-gray-600'
-                          }`} 
+                          }`}
                         />
                       </button>
-                      
+
                       {/* Rating badge with animation */}
                       <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 transform transition-all duration-300 hover:scale-105 shadow-lg">
                         <Star className="w-4 h-4 text-yellow-400 fill-current animate-pulse" />
                         <span className="text-sm font-semibold text-gray-800">{course.rating}</span>
                       </div>
                     </div>
-                    
+
                     <CardHeader className="pb-4 relative z-10">
                       <CardTitle className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
                         {course.title}
@@ -551,13 +623,13 @@ export default function Courses() {
                         {course.description}
                       </CardDescription>
                     </CardHeader>
-                    
+
                     <CardContent className="pt-0 relative z-10">
                       {/* Tags */}
                       {course.tags && course.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-4">
                           {course.tags.slice(0, 3).map((tag, tagIndex) => (
-                            <span 
+                            <span
                               key={tagIndex}
                               className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full transition-all duration-300 hover:bg-blue-200 hover:scale-105"
                             >
@@ -571,7 +643,7 @@ export default function Courses() {
                           )}
                         </div>
                       )}
-                      
+
                       <div className="space-y-3 mb-6">
                         <div className="flex items-center text-sm text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
                           <Clock className="w-4 h-4 mr-2 text-blue-500 animate-pulse" />
@@ -584,7 +656,7 @@ export default function Courses() {
                           <span className="ml-2">{course.students.toLocaleString()} enrolled</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <IndianRupee className="w-6 h-6 text-green-600 animate-pulse animation-delay-1000" />
@@ -592,10 +664,9 @@ export default function Courses() {
                             <span className="text-2xl font-bold text-green-600">
                               {getDiscountedPrice(course).toLocaleString()}
                             </span>
-
                           </div>
                         </div>
-                        <Button 
+                        <Button
                           onClick={() => handleBuyNow(course.id)}
                           className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 group relative overflow-hidden"
                         >
@@ -619,18 +690,17 @@ export default function Courses() {
           <div className="absolute top-10 left-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-20 animate-pulse"></div>
           <div className="absolute bottom-10 right-10 w-40 h-40 bg-pink-500 rounded-full mix-blend-soft-light filter blur-3xl opacity-20 animate-pulse animation-delay-2000"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center transform transition-all duration-500 hover:rotate-12">
               <BookOpen className="w-8 h-8 text-white" />
             </div>
           </div>
-<p className="text-lg mb-4">&copy; 2024 StudyNotes Hub. All rights reserved.</p>
-          <p className="text-gray-400 text-sm">Empowering learners worldwide with quality study materials</p>        </div>
+          <p className="text-lg mb-4">&copy; 2024 StudyNotes Hub. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">Empowering learners worldwide with quality study materials</p>
+        </div>
       </footer>
-
-      
 
       <style>{`
         @keyframes float-particle {
