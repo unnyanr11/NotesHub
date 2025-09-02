@@ -47,7 +47,7 @@ interface Milestone {
 
 export default function About() {
   const [isVisible, setIsVisible] = useState(false)
-  const [activeTab, setActiveTab] = useState<'mission' | 'team' | 'values'>('mission')
+  const [activeTab, setActiveTab] = useState<'mission' | 'values'>('mission')
 
   useEffect(() => {
     setIsVisible(true)
@@ -258,7 +258,7 @@ export default function About() {
           <div className="flex justify-center space-x-4">
             {[
               { key: 'mission', label: 'Our Mission' },
-              { key: 'team', label: 'Our Team' },
+             
               { key: 'values', label: 'Our Values' }
             ].map((tab) => (
               <button
@@ -333,57 +333,7 @@ export default function About() {
             </div>
           )}
 
-          {/* Team Section */}
-          {activeTab === 'team' && (
-            <div className={`space-y-12 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-              <div className="text-center mb-12">
-                <h3 className="text-3xl font-bold text-gray-800 mb-4">Meet Our Team</h3>
-                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                  Our team consists of passionate educators, industry experts, and technology innovators dedicated to your success.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {teamMembers.map((member, index) => (
-                  <div 
-                    key={member.id}
-                    className={`transform transition-all duration-700 hover:scale-105 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}
-                    style={{ transitionDelay: `${index * 100}ms` }}
-                  >
-                    <Card className="h-full bg-white/90 backdrop-blur-sm shadow-xl border-0 overflow-hidden hover:shadow-2xl transition-all duration-300">
-                      <div className="h-48 overflow-hidden">
-                        <img 
-                          src={member.image} 
-                          alt={member.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <CardContent className="p-6">
-                        <h4 className="text-xl font-bold text-gray-800 mb-1">{member.name}</h4>
-                        <Badge className="mb-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
-                          {member.role}
-                        </Badge>
-                        <p className="text-gray-600 text-sm mb-4 leading-relaxed">{member.bio}</p>
-                        <div className="space-y-2">
-                          <h5 className="font-semibold text-gray-700 text-sm">Expertise:</h5>
-                          <div className="flex flex-wrap gap-1">
-                            {member.expertise.map((skill, skillIndex) => (
-                              <span 
-                                key={skillIndex}
-                                className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full"
-                              >
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          
 
           {/* Values Section */}
           {activeTab === 'values' && (
@@ -420,21 +370,7 @@ export default function About() {
                   <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
                     Become part of a global community of learners and start your journey towards personal and professional growth today.
                   </p>
-                  <div className="flex justify-center space-x-4">
-                    <Button 
-                      onClick={() => window.location.href = '/courses'}
-                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105"
-                    >
-                      Explore Notes
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      onClick={() => window.location.href = '/contact'}
-                      className="border-blue-500 text-blue-600 hover:bg-blue-50 font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-105"
-                    >
-                      Contact Us
-                    </Button>
-                  </div>
+                
                 </div>
               </div>
             </div>
