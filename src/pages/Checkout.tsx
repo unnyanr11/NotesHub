@@ -1,3 +1,8 @@
+
+
+
+
+
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
 import { Button } from '../components/ui/button'
@@ -19,17 +24,22 @@ import { sendPaymentVerificationEmail } from '../services/email'
 
 /**
  * Checkout page for purchasing notes with QR code payment and email submission.
- * - Shows selected note summary and QR code to pay.
+ * - Shows selected item summary and QR code to pay.
  * - Collects buyer info and screenshot evidence.
  * - Supports two screenshot modes:
  *   1) File upload (production)
  *   2) Paste public image URL (preview environments where uploads are blocked)
- * - Sends details via email (attachment when possible; otherwise includes URL).
+ * - Primary source for item details: localStorage('selectedProduct') set by Buy button.
+ *   Fallback: query param (noteId or courseId) against local sample.
  */
 export default function CheckoutPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+
+  // Accept both keys for robustness
   const noteId = searchParams.get('noteId')
+  const courseId = searchParams.get('courseId')
+  const effectiveId = noteId || courseId
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showVerificationModal, setShowVerificationModal] = useState(false)
@@ -41,6 +51,15 @@ export default function CheckoutPage() {
     email: '',
     phone: '',
   })
+
+  // Selected product persisted by the Courses page
+  const [selectedProduct, setSelectedProduct] = useState<{
+    id: string
+    title: string
+    price: number
+    image?: string
+    type?: string
+  } | null>(null)
 
   // Screenshot input mode: 'file' is preferred, 'url' is fallback for restricted environments
   const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file')
@@ -92,13 +111,20 @@ export default function CheckoutPage() {
     },
   ]
 
-  const selectedNote = notes.find((note) => note.id === noteId) || notes[0]
-
+  // Load selected product from localStorage (primary source)
   useEffect(() => {
-    if (!noteId) {
-      navigate('/notes')
+    try {
+      const raw = localStorage.getItem('selectedProduct')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed && parsed.id && parsed.title && typeof parsed.price === 'number') {
+          setSelectedProduct(parsed)
+        }
+      }
+    } catch {
+      // ignore storage errors
     }
-  }, [noteId, navigate])
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -116,6 +142,12 @@ export default function CheckoutPage() {
       [name]: value,
     }))
   }
+
+  // Pick the item to show: localStorage -> by query param -> first item
+  const displayItem =
+    selectedProduct ||
+    (effectiveId ? notes.find((note) => note.id === effectiveId) || null : null) ||
+    notes[0]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -137,9 +169,9 @@ export default function CheckoutPage() {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        noteId,
-        noteTitle: selectedNote.title,
-        amount: selectedNote.price,
+        noteId: effectiveId,
+        noteTitle: displayItem.title,
+        amount: displayItem.price,
         file: uploadMode === 'file' ? file : null,
         imageUrl: uploadMode === 'url' ? imageUrl.trim() : undefined,
         // Critical for this preview: do NOT attach binary when using URL mode.
@@ -153,6 +185,10 @@ export default function CheckoutPage() {
       setPreviewUrl(null)
       setImageUrl('')
       setFormData({ name: '', email: '', phone: '' })
+      // Optional: clear selected item for next time
+      try {
+        localStorage.removeItem('selectedProduct')
+      } catch {}
     } catch (err: any) {
       // Provide a clearer hint when the host blocks file uploads
       const msg: string = err?.message || 'Failed to submit. Please try again.'
@@ -171,6 +207,8 @@ export default function CheckoutPage() {
   const handleBackToNotes = () => {
     navigate('/courses')
   }
+
+  const getAmountLabel = (p: { price: number }) => `₹${p.price.toLocaleString()}`
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -198,15 +236,15 @@ export default function CheckoutPage() {
               <CardContent>
                 <div className="flex gap-4 mb-6">
                   <img
-                    src={selectedNote.image}
-                    alt={selectedNote.title}
+                    src={displayItem.image}
+                    alt={displayItem.title}
                     className="w-20 h-20 object-cover rounded-lg"
                   />
                   <div>
-                    <h3 className="font-semibold text-lg">{selectedNote.title}</h3>
+                    <h3 className="font-semibold text-lg">{displayItem.title}</h3>
                     <div className="text-2xl font-bold text-green-600 flex items-center mt-2">
                       <IndianRupee className="w-5 h-5 mr-1" />
-                      {selectedNote.price.toLocaleString()}
+                      {displayItem.price.toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -214,7 +252,7 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">₹{selectedNote.price.toLocaleString()}</span>
+                    <span className="font-medium">₹{displayItem.price.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Processing Fee</span>
@@ -223,7 +261,7 @@ export default function CheckoutPage() {
                   <div className="border-t pt-3 flex justify-between">
                     <span className="font-semibold">Total</span>
                     <span className="text-xl font-bold text-green-600">
-                      ₹{selectedNote.price.toLocaleString()}
+                      ₹{displayItem.price.toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -256,7 +294,7 @@ export default function CheckoutPage() {
                     <div className="bg-green-50 p-3 rounded-lg">
                       <p className="text-sm font-medium text-gray-700">Amount to Pay:</p>
                       <p className="text-xl font-bold text-green-600">
-                        ₹{selectedNote.price.toLocaleString()}
+                        ₹{displayItem.price.toLocaleString()}
                       </p>
                     </div>
                   </div>
@@ -494,7 +532,7 @@ export default function CheckoutPage() {
             <Button
               onClick={() => {
                 setShowVerificationModal(false)
-                navigate('/notes')
+                navigate('/courses')
               }}
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >

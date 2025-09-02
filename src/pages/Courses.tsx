@@ -1,4 +1,3 @@
-
 /**
  * Main courses page where users can browse and purchase courses
  */
@@ -32,6 +31,10 @@ interface Course {
   lastUpdated: string
 }
 
+/**
+ * Courses grid with search and filters.
+ * Clicking Buy Now will persist the selected product in localStorage and navigate to checkout.
+ */
 export default function Courses() {
   const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
@@ -214,7 +217,19 @@ export default function Courses() {
     return matchesSearch && matchesCategory
   })
 
+  /**
+   * Persist the selected course to localStorage and navigate to checkout.
+   * This allows the Checkout page to automatically load product details.
+   */
   const handleBuyNow = (courseId: string) => {
+    const course = courses.find(c => c.id === courseId)
+    try {
+      if (course) {
+        localStorage.setItem('selectedProduct', JSON.stringify({ ...course, type: 'course' }))
+      }
+    } catch {
+      // Ignore storage errors (private mode, quota, etc.)
+    }
     navigate(`/checkout?courseId=${courseId}`)
   }
 

@@ -70,7 +70,7 @@ export default function PaymentDetails({ selectedItem }: PaymentDetailsProps) {
           <div>
             <CardTitle className="text-2xl font-bold">Payment Details</CardTitle>
             <p className="text-blue-100">
-              Complete your purchase for {isCourse ? 'notes' : 'note'}
+              Complete your purchase for {isCourse ? 'courses' : 'note'}
             </p>
           </div>
         </div>
