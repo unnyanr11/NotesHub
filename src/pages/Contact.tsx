@@ -1,6 +1,10 @@
 /**
  * Contact page for user support and help inquiries
+ * - Submits the contact form via Web3Forms email (no backend).
+ * - Validates fields and phone format hints.
+ * - Shows success state on successful email submission.
  */
+
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
@@ -9,7 +13,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { 
   ArrowLeft, 
   Mail, 
@@ -25,6 +28,7 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react'
+import { sendContactSupportEmail } from '../services/email'
 
 interface ContactFormData {
   name: string
@@ -53,6 +57,9 @@ export default function Contact() {
     setIsVisible(true)
   }, [])
 
+  /**
+   * Handles local state update with phone formatting for better readability.
+   */
   const handleInputChange = (field: keyof ContactFormData, value: string) => {
     // Phone number formatting
     if (field === 'phone') {
@@ -79,6 +86,9 @@ export default function Contact() {
     setError('')
   }
 
+  /**
+   * Simple phone validation supporting Indian format and international lengths.
+   */
   const validatePhoneNumber = (phone: string): boolean => {
     // Remove all non-digit characters for validation
     const cleaned = phone.replace(/\D/g, '')
@@ -97,6 +107,9 @@ export default function Contact() {
     return false
   }
 
+  /**
+   * Submit handler: validates fields and sends email via Web3Forms.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -120,11 +133,22 @@ export default function Contact() {
     setIsSubmitting(true)
     setError('')
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      await sendContactSupportEmail({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        subject: formData.subject,
+        category: formData.category,
+        message: formData.message,
+      })
       setIsSubmitted(true)
-    }, 2000)
+    } catch (err: any) {
+      const msg = err?.message || 'Failed to send your message. Please try again.'
+      setError(msg)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleReset = () => {
@@ -216,9 +240,6 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-    
-
-
       <header className="bg-white/90 backdrop-blur-sm shadow-lg border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center py-6">
@@ -231,7 +252,7 @@ export default function Contact() {
               Back
             </Button>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Contact & Support
+              Contact &amp; Support
             </h1>
           </div>
         </div>
@@ -269,15 +290,12 @@ export default function Contact() {
               <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6">
                 <div className="flex items-center space-x-3">
                   <MessageCircle className="w-8 h-8 animate-pulse" />
-
-          <div>
-            <CardTitle className="text-2xl font-bold">Send us a Message</CardTitle>
-            <CardDescription className="text-purple-100">
-              Fill out the form below and we'll get back to you soon
-            </CardDescription>
-          </div>
-
-                  
+                  <div>
+                    <CardTitle className="text-2xl font-bold">Send us a Message</CardTitle>
+                    <CardDescription className="text-purple-100">
+                      Fill out the form below and we'll get back to you soon
+                    </CardDescription>
+                  </div>
                 </div>
               </CardHeader>
               
@@ -390,7 +408,7 @@ export default function Contact() {
 
                   {/* Error Message */}
                   {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3 animate-pulse">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
                       <AlertCircle className="w-5 h-5 text-red-500" />
                       <p className="text-red-600 text-sm font-medium">{error}</p>
                     </div>
@@ -449,7 +467,6 @@ export default function Contact() {
                     </div>
                   </div>
                 
-                  
                   <div className="flex items-center space-x-4 p-3 bg-purple-50 rounded-lg transform transition-all duration-300 hover:scale-105">
                     <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
                       <MapPin className="w-6 h-6 text-white" />
@@ -480,15 +497,12 @@ export default function Contact() {
                   <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
                     <BookOpen className="w-5 h-5 text-white" />
                   </div>
-
-<div>
-            <CardTitle className="text-2xl font-bold">Quick FAQ</CardTitle>
-            <CardDescription className="text-purple-100">
-              Find answers to common questions
-            </CardDescription>
-          </div>
-                  
-                  
+                  <div>
+                    <CardTitle className="text-2xl font-bold">Quick FAQ</CardTitle>
+                    <CardDescription className="text-purple-100">
+                      Find answers to common questions
+                    </CardDescription>
+                  </div>
                 </div>
               </CardHeader>
               
@@ -514,14 +528,7 @@ export default function Contact() {
                   ))}
                 </div>
                 
-                <div className="mt-6 text-center">
-                  <Button 
-                    variant="outline" 
-                    className="border-green-500 text-green-600 hover:bg-green-50"
-                  >
-                    View All FAQs
-                  </Button>
-                </div>
+              
               </CardContent>
             </Card>
           </div>

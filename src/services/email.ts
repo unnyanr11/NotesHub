@@ -4,6 +4,8 @@
  * - Supports file attachments up to 10MB.
  * - Fallback: can include a public image URL if file uploads are blocked.
  *
+ * Also provides a contact form email sender to route support inquiries.
+ *
  * Note: Some preview environments block binary uploads (FormData with files).
  * To avoid that, we allow "URL-only" submissions where the screenshot URL is
  * included in the email body without attaching any file.
@@ -32,6 +34,22 @@ export interface PaymentEmailPayload {
    * Default: false.
    */
   attachFromImageUrl?: boolean
+}
+
+/** Contact form payload shape */
+export interface ContactEmailPayload {
+  /** Sender full name */
+  name: string
+  /** Sender email */
+  email: string
+  /** Optional phone (plain or formatted) */
+  phone?: string
+  /** Subject line from the form */
+  subject: string
+  /** Selected category (e.g., technical, billing, course, account, general) */
+  category: string
+  /** Detailed message from the user */
+  message: string
 }
 
 interface EmailProviderConfig {
@@ -166,5 +184,68 @@ export async function sendPaymentVerificationEmail(payload: PaymentEmailPayload)
         ? ' The image URL was included instead of an attachment (likely due to CORS or upload limits).'
         : ''
     throw new Error((data.message || 'Failed to send email') + hint)
+  }
+}
+
+/**
+ * Sends a contact/support inquiry email via Web3Forms.
+ * - Uses the same provider config.
+ * - No file attachments; text-only submission.
+ * - Includes structured key-value fields for better readability in inbox.
+ */
+export async function sendContactSupportEmail(payload: ContactEmailPayload) {
+  if (!emailConfig.accessKey || emailConfig.accessKey.startsWith('REPLACE_')) {
+    throw new Error(
+      'Email service not configured. Please set your Web3Forms accessKey in src/services/email.ts'
+    )
+  }
+
+  const form = new FormData()
+  form.append('access_key', emailConfig.accessKey)
+  if (emailConfig.notifyTo) {
+    form.append('to', emailConfig.notifyTo)
+  }
+
+  // Subject and message
+  const subject = `New Contact Inquiry: ${payload.subject}`
+  form.append('subject', subject)
+  form.append(
+    'message',
+    [
+      `A new contact inquiry has been submitted.`,
+      '',
+      `Name: ${payload.name}`,
+      `Email: ${payload.email}`,
+      payload.phone ? `Phone: ${payload.phone}` : undefined,
+      `Category: ${payload.category}`,
+      '',
+      'Message:',
+      payload.message,
+    ]
+      .filter(Boolean)
+      .join('\n')
+  )
+
+  // Standard recommended fields for Web3Forms
+  form.append('from_name', payload.name)
+  form.append('from_email', payload.email)
+  form.append('replyto', payload.email)
+
+  // Key-value pairs for the email body
+  form.append('Sender Name', payload.name)
+  form.append('Sender Email', payload.email)
+  if (payload.phone) form.append('Sender Phone', payload.phone)
+  form.append('Category', payload.category)
+  form.append('Subject', payload.subject)
+  form.append('Message', payload.message)
+
+  const res = await fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    body: form,
+  })
+
+  const data = (await res.json()) as { success: boolean; message?: string }
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to send contact message')
   }
 }
