@@ -138,7 +138,7 @@ export default function ProductCard({
                 ? 'bg-blue-500/90 text-white hover:bg-blue-600' 
                 : 'bg-purple-500/90 text-white hover:bg-purple-600'
             } transition-all duration-300 transform hover:scale-105 shadow-lg`}>
-              {type === 'course' ? 'Notes' : product.format || 'Note'}
+              {type === 'course' ? 'Course' : product.format || 'Note'}
             </Badge>
           </div>
           

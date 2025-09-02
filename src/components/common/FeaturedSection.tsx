@@ -9,7 +9,7 @@ import { Product } from './ProductCard'
 
 interface FeaturedSectionProps {
   products: Product[]
-  type: 'course' | 'course'
+  type: 'course' | 'note'
   onBuyNow: (productId: string) => void
   title?: string
 }

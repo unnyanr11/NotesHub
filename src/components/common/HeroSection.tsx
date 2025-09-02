@@ -13,7 +13,7 @@ interface HeroSectionProps {
   primaryButtonLink?: string
   secondaryButtonText?: string
   secondaryButtonLink?: string
-  theme?: 'courses' | 'notes' | 'about' | 'contact'
+  theme?: 'courses' | 'about' | 'contact'
   stats?: Array<{
     icon: any
     value: string
